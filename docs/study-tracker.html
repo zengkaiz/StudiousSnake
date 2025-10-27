@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学习记录本 - Study Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#00ce33',
+                        'primary-dark': '#00a329',
+                        'primary-light': '#33d85c',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .markdown-content {
+            line-height: 1.8;
+        }
+        .markdown-content h1 { font-size: 1.5rem; font-weight: bold; margin: 1rem 0; }
+        .markdown-content h2 { font-size: 1.25rem; font-weight: bold; margin: 0.875rem 0; }
+        .markdown-content p { margin: 0.5rem 0; }
+        .markdown-content ul, .markdown-content ol { margin-left: 1.5rem; }
+        .markdown-content code { background: #f3f4f6; padding: 0.125rem 0.25rem; border-radius: 0.25rem; }
+        .markdown-content pre { background: #1f2937; color: #f3f4f6; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
+        .markdown-content a { color: #00ce33; text-decoration: underline; }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            transition: all 0.2s;
+        }
+        .calendar-day:hover {
+            transform: scale(1.05);
+        }
+        .has-notes {
+            background: linear-gradient(135deg, #00ce33 0%, #33d85c 100%);
+            color: white;
+            font-weight: 600;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    
+    <!-- 页面容器 -->
+    <div id="app" class="max-w-5xl mx-auto px-4 py-8">
+        
+        <!-- 页面1: 项目列表 -->
+        <div id="page-projects" class="page">
+            <!-- Header -->
+            <div class="text-center mb-12 fade-in">
+                <h1 class="text-4xl font-bold text-gray-800 mb-3">贪学蛇</h1>
+                <p class="text-gray-600">记录每一天的成长轨迹，每天学习一点点，积累成大成就</p>
+            </div>
+
+            <!-- 创建项目按钮 -->
+            <div class="mb-8 text-center">
+                <button onclick="showCreateProject()" class="bg-primary hover:bg-primary-dark text-white font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                    <span class="text-xl mr-2">+</span> 创建新项目
+                </button>
+            </div>
+
+            <!-- 项目列表 -->
+            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 项目卡片示例 -->
+                <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105 slide-up" onclick="goToProject(1, '英语学习')">
+                    <div class="h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=500&h=300&fit=crop');">
+                        <div class="h-full bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6 text-white w-full">
+                                <h3 class="text-2xl font-bold mb-2">📖 英语学习</h3>
+                                <p class="text-sm opacity-90">每日单词 · 短语积累</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-gray-50">
+                        <div class="flex justify-between text-sm text-gray-600">
+                            <span>🔥 连续打卡 <b class="text-primary">12</b> 天</span>
+                            <span>📝 <b>45</b> 条笔记</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105 slide-up" style="animation-delay: 0.1s" onclick="goToProject(2, 'Web3 开发')">
+                    <div class="h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=500&h=300&fit=crop');">
+                        <div class="h-full bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6 text-white w-full">
+                                <h3 class="text-2xl font-bold mb-2">⛓️ Web3 开发</h3>
+                                <p class="text-sm opacity-90">区块链 · 智能合约 · DApp</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-gray-50">
+                        <div class="flex justify-between text-sm text-gray-600">
+                            <span>🔥 连续打卡 <b class="text-primary">8</b> 天</span>
+                            <span>📝 <b>23</b> 条笔记</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer transform hover:scale-105 slide-up" style="animation-delay: 0.2s" onclick="goToProject(3, 'React 进阶')">
+                    <div class="h-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=500&h=300&fit=crop');">
+                        <div class="h-full bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6 text-white w-full">
+                                <h3 class="text-2xl font-bold mb-2">⚛️ React 进阶</h3>
+                                <p class="text-sm opacity-90">Hooks · 性能优化 · 设计模式</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-gray-50">
+                        <div class="flex justify-between text-sm text-gray-600">
+                            <span>🔥 连续打卡 <b class="text-primary">5</b> 天</span>
+                            <span>📝 <b>18</b> 条笔记</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 创建项目弹窗 -->
+            <div id="modal-create-project" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50" onclick="closeModalOnBackdrop(event, 'modal-create-project')">
+                <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 slide-up" onclick="event.stopPropagation()">
+                    <h2 class="text-2xl font-bold mb-6 text-gray-800">创建新项目</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">项目名称</label>
+                            <input type="text" placeholder="例如：英语学习" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">项目图标</label>
+                            <div class="grid grid-cols-6 gap-2">
+                                <button class="text-3xl p-3 hover:bg-gray-100 rounded-lg transition">📖</button>
+                                <button class="text-3xl p-3 hover:bg-gray-100 rounded-lg transition">⛓️</button>
+                                <button class="text-3xl p-3 hover:bg-gray-100 rounded-lg transition">⚛️</button>
+                                <button class="text-3xl p-3 hover:bg-gray-100 rounded-lg transition">💻</button>
+                                <button class="text-3xl p-3 hover:bg-gray-100 rounded-lg transition">🎨</button>
+                                <button class="text-3xl p-3 hover:bg-gray-100 rounded-lg transition">🎯</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">简介</label>
+                            <textarea placeholder="简单描述一下学习目标..." rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-8">
+                        <button onclick="hideCreateProject()" class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">取消</button>
+                        <button onclick="createProject()" class="flex-1 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition font-medium">创建</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面2: 项目详情（月历视图） -->
+        <div id="page-project-detail" class="page hidden">
+            <!-- Header -->
+            <div class="mb-8 fade-in">
+                <button onclick="goToProjects()" class="text-gray-600 hover:text-primary transition mb-4 flex items-center gap-2">
+                    <span>←</span> 返回项目列表
+                </button>
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2" id="project-title">📖 英语学习</h1>
+                        <p class="text-gray-600">每日单词 · 短语积累</p>
+                    </div>
+                    <button onclick="showCreateNote()" class="bg-primary hover:bg-primary-dark text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                        <span class="text-lg mr-1">+</span> 今日打卡
+                    </button>
+                </div>
+            </div>
+
+            <!-- 月份选择器 -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6 fade-in">
+                <div class="flex justify-between items-center">
+                    <button onclick="changeMonth(-1)" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <h2 class="text-xl font-bold text-gray-800" id="current-month">2025年10月</h2>
+                    <button onclick="changeMonth(1)" class="p-2 hover:bg-gray-100 rounded-lg transition">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 月历 -->
+            <div class="bg-white rounded-xl shadow-md p-6 slide-up">
+                <!-- 星期标题 -->
+                <div class="grid grid-cols-7 gap-2 mb-4">
+                    <div class="text-center font-semibold text-gray-600 text-sm">日</div>
+                    <div class="text-center font-semibold text-gray-600 text-sm">一</div>
+                    <div class="text-center font-semibold text-gray-600 text-sm">二</div>
+                    <div class="text-center font-semibold text-gray-600 text-sm">三</div>
+                    <div class="text-center font-semibold text-gray-600 text-sm">四</div>
+                    <div class="text-center font-semibold text-gray-600 text-sm">五</div>
+                    <div class="text-center font-semibold text-gray-600 text-sm">六</div>
+                </div>
+                
+                <!-- 日期格子 -->
+                <div class="grid grid-cols-7 gap-2" id="calendar-grid">
+                    <!-- 空白填充 -->
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    
+                    <!-- 10月份日期 -->
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-700">1</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-700">2</span>
+                    </div>
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(1)">
+                        <span>3</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-700">4</span>
+                    </div>
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(2)">
+                        <span>5</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-700">6</span>
+                    </div>
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(3)">
+                        <span>7</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+                    
+                    <!-- 继续其他日期 -->
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-700">8</span>
+                    </div>
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(4)">
+                        <span>9</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(5)">
+                        <span>10</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-700">11</span>
+                    </div>
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(6)">
+                        <span>12</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-700">13</span>
+                    </div>
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(7)">
+                        <span>14</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(8)">
+                        <span>15</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-700">16</span>
+                    </div>
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(9)">
+                        <span>17</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(10)">
+                        <span>18</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-700">19</span>
+                    </div>
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(11)">
+                        <span>20</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-700">21</span>
+                    </div>
+
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative" onclick="goToNote(12)">
+                        <span>22</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                    </div>
+                    <div class="calendar-day has-notes rounded-lg flex items-center justify-center cursor-pointer relative bg-primary/20 border-2 border-primary" onclick="goToNote(13)">
+                        <span class="font-bold text-primary">23</span>
+                        <span class="absolute top-1 right-1 text-xs">📝</span>
+                        <span class="absolute -top-2 -right-2 bg-primary text-white text-xs px-2 py-1 rounded-full">今天</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-400">24</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-400">25</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-400">26</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-400">27</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-400">28</span>
+                    </div>
+
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-400">29</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-400">30</span>
+                    </div>
+                    <div class="calendar-day bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                        <span class="text-gray-400">31</span>
+                    </div>
+                </div>
+
+                <!-- 统计信息 -->
+                <div class="mt-6 pt-6 border-t border-gray-200 flex justify-around text-center">
+                    <div>
+                        <div class="text-2xl font-bold text-primary">12</div>
+                        <div class="text-sm text-gray-600">本月打卡</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-primary">45</div>
+                        <div class="text-sm text-gray-600">总计笔记</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-primary">85%</div>
+                        <div class="text-sm text-gray-600">完成率</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面3: 笔记详情 -->
+        <div id="page-note-detail" class="page hidden">
+            <div class="mb-8 fade-in">
+                <button onclick="backToProject()" class="text-gray-600 hover:text-primary transition mb-4 flex items-center gap-2">
+                    <span>←</span> 返回月历
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-3xl mx-auto slide-up">
+                <!-- 笔记头部 -->
+                <div class="border-b border-gray-200 pb-6 mb-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-800 mb-2">10月23日 学习笔记</h1>
+                            <div class="flex gap-4 text-sm text-gray-600">
+                                <span>📅 2025年10月23日</span>
+                                <span>⏰ 学习时长: 2小时</span>
+                            </div>
+                        </div>
+                        <button onclick="editNote()" class="text-primary hover:text-primary-dark transition flex items-center gap-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            编辑
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 笔记内容 -->
+                <div class="markdown-content text-gray-700">
+                    <h2 class="text-primary">📖 今日单词</h2>
+                    <ul class="space-y-2 mb-6">
+                        <li><strong>eloquent</strong> /ˈeləkwənt/ <em>adj.</em> 雄辩的，有说服力的
+                            <div class="text-sm text-gray-600 mt-1">例句: She gave an eloquent speech that moved everyone.</div>
+                        </li>
+                        <li><strong>resilient</strong> /rɪˈzɪliənt/ <em>adj.</em> 有韧性的，能复原的
+                            <div class="text-sm text-gray-600 mt-1">例句: Children are often more resilient than we think.</div>
+                        </li>
+                        <li><strong>meticulous</strong> /məˈtɪkjələs/ <em>adj.</em> 一丝不苟的，细致的
+                            <div class="text-sm text-gray-600 mt-1">例句: He is meticulous about his work.</div>
+                        </li>
+                    </ul>
+
+                    <h2 class="text-primary">💡 重点短语</h2>
+                    <ul class="space-y-2 mb-6">
+                        <li><strong>take into account</strong> - 考虑，顾及
+                            <div class="text-sm text-gray-600 mt-1">We must take into account the feelings of others.</div>
+                        </li>
+                        <li><strong>come across</strong> - 偶然遇见，给人印象
+                            <div class="text-sm text-gray-600 mt-1">I came across an old friend yesterday.</div>
+                        </li>
+                    </ul>
+
+                    <h2 class="text-primary">✍️ 学习心得</h2>
+                    <p class="mb-4">
+                        今天重点学习了几个高级词汇，这些词在雅思写作中经常用到。<code>eloquent</code> 这个词特别有用，可以用来描述演讲或文章的表达能力。
+                    </p>
+                    <p class="mb-6">
+                        通过造句练习，我发现把这些词放在实际语境中使用，记忆效果会好很多。明天打算继续用这个方法学习新词汇。
+                    </p>
+
+                    <h2 class="text-primary">🔗 相关链接</h2>
+                    <ul class="space-y-1">
+                        <li><a href="https://www.vocabulary.com/dictionary/eloquent" target="_blank">Vocabulary.com - eloquent 详解</a></li>
+                        <li><a href="https://youglish.com/pronounce/resilient/english" target="_blank">YouGlish - resilient 发音示例</a></li>
+                    </ul>
+                </div>
+
+                <!-- 底部操作 -->
+                <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between">
+                    <div class="flex gap-2">
+                        <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">单词</span>
+                        <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm">短语</span>
+                    </div>
+                    <button class="text-red-500 hover:text-red-700 transition flex items-center gap-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        删除
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页面4: 创建/编辑笔记 -->
+        <div id="page-create-note" class="page hidden">
+            <div class="mb-8 fade-in">
+                <button onclick="backToProject()" class="text-gray-600 hover:text-primary transition mb-4 flex items-center gap-2">
+                    <span>←</span> 返回月历
+                </button>
+                <h1 class="text-3xl font-bold text-gray-800">✏️ 今日打卡</h1>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8 max-w-3xl mx-auto slide-up">
+                <form class="space-y-6">
+                    <!-- 日期选择 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">日期</label>
+                        <input type="date" value="2025-10-23" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+
+                    <!-- 学习时长 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">学习时长（小时）</label>
+                        <input type="number" step="0.5" value="2" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+
+                    <!-- 学习内容 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            学习内容
+                            <span class="text-gray-500 text-xs ml-2">支持 Markdown 格式</span>
+                        </label>
+                        <div class="flex gap-2 mb-2">
+                            <button type="button" class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick="insertMarkdown('## ')">标题</button>
+                            <button type="button" class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick="insertMarkdown('**粗体**')">粗体</button>
+                            <button type="button" class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick="insertMarkdown('`代码`')">代码</button>
+                            <button type="button" class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick="insertMarkdown('- ')">列表</button>
+                            <button type="button" class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50" onclick="insertMarkdown('[链接](url)')">链接</button>
+                        </div>
+                        <textarea id="note-content" rows="12" placeholder="## 📖 今日单词
+
+**eloquent** /ˈeləkwənt/ adj. 雄辩的
+- 例句: She gave an eloquent speech.
+
+## 💡 学习心得
+
+今天学习了..." 
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-mono text-sm">## 📖 今日单词
+
+**eloquent** /ˈeləkwənt/ adj. 雄辩的，有说服力的
+- 例句: She gave an eloquent speech that moved everyone.
+
+**resilient** /rɪˈzɪliənt/ adj. 有韧性的，能复原的
+- 例句: Children are often more resilient than we think.
+
+## 💡 重点短语
+
+**take into account** - 考虑，顾及
+- We must take into account the feelings of others.
+
+## ✍️ 学习心得
+
+今天重点学习了几个高级词汇，这些词在雅思写作中经常用到。通过造句练习，记忆效果很好。
+
+## 🔗 相关链接
+
+- [Vocabulary.com - eloquent](https://www.vocabulary.com/dictionary/eloquent)</textarea>
+                    </div>
+
+                    <!-- 预览区域 -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-sm font-medium text-gray-700">预览</label>
+                            <button type="button" onclick="previewNote()" class="text-primary hover:text-primary-dark text-sm">刷新预览</button>
+                        </div>
+                        <div id="note-preview" class="markdown-content border border-gray-200 rounded-lg p-6 bg-gray-50 min-h-[200px]">
+                            <p class="text-gray-400">在上方输入内容后点击"刷新预览"查看效果</p>
+                        </div>
+                    </div>
+
+                    <!-- 标签 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">标签</label>
+                        <div class="flex flex-wrap gap-2 mb-2">
+                            <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm cursor-pointer hover:bg-primary/20 transition">单词 ×</span>
+                            <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm cursor-pointer hover:bg-blue-100 transition">短语 ×</span>
+                        </div>
+                        <input type="text" placeholder="添加标签，按回车确认" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <div class="flex gap-4 pt-4">
+                        <button type="button" onclick="backToProject()" class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium">取消</button>
+                        <button type="submit" onclick="saveNote(event)" class="flex-1 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition font-medium shadow-lg hover:shadow-xl">保存打卡</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 应用状态
+        const appState = {
+            currentPage: 'projects',
+            currentProject: null,
+            currentMonth: new Date(2025, 9), // 2025年10月
+        };
+
+        // 页面导航函数
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(`page-${pageName}`).classList.remove('hidden');
+            appState.currentPage = pageName;
+            window.scrollTo(0, 0);
+        }
+
+        function goToProjects() {
+            showPage('projects');
+        }
+
+        function goToProject(id, name) {
+            appState.currentProject = { id, name };
+            document.getElementById('project-title').textContent = name === '英语学习' ? '📖 英语学习' : 
+                                                                   name === 'Web3 开发' ? '⛓️ Web3 开发' :
+                                                                   '⚛️ ' + name;
+            showPage('project-detail');
+        }
+
+        function goToNote(noteId) {
+            showPage('note-detail');
+        }
+
+        function backToProject() {
+            showPage('project-detail');
+        }
+
+        function showCreateNote() {
+            showPage('create-note');
+        }
+
+        function editNote() {
+            showPage('create-note');
+        }
+
+        // 项目创建
+        function showCreateProject() {
+            document.getElementById('modal-create-project').classList.remove('hidden');
+        }
+
+        function hideCreateProject() {
+            document.getElementById('modal-create-project').classList.add('hidden');
+        }
+
+        function closeModalOnBackdrop(event, modalId) {
+            if (event.target.id === modalId) {
+                document.getElementById(modalId).classList.add('hidden');
+            }
+        }
+
+        function createProject() {
+            alert('项目创建成功！（这是演示原型）');
+            hideCreateProject();
+        }
+
+        // 月份切换
+        function changeMonth(direction) {
+            appState.currentMonth.setMonth(appState.currentMonth.getMonth() + direction);
+            const year = appState.currentMonth.getFullYear();
+            const month = appState.currentMonth.getMonth() + 1;
+            document.getElementById('current-month').textContent = `${year}年${month}月`;
+            // 实际项目中这里需要重新渲染日历
+        }
+
+        // Markdown 编辑器功能
+        function insertMarkdown(syntax) {
+            const textarea = document.getElementById('note-content');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const before = text.substring(0, start);
+            const selected = text.substring(start, end);
+            const after = text.substring(end);
+            
+            if (syntax.includes('**') || syntax.includes('`') || syntax.includes('[')) {
+                textarea.value = before + syntax.replace(/\*\*|\`|链接/g, selected || syntax.match(/\*\*|\`|链接/)[0]) + after;
+            } else {
+                textarea.value = before + syntax + selected + after;
+            }
+            textarea.focus();
+        }
+
+        function previewNote() {
+            const content = document.getElementById('note-content').value;
+            const preview = document.getElementById('note-preview');
+            
+            if (typeof marked !== 'undefined') {
+                preview.innerHTML = marked.parse(content);
+            } else {
+                preview.innerHTML = content.replace(/\n/g, '<br>');
+            }
+        }
+
+        function saveNote(event) {
+            event.preventDefault();
+            alert('笔记保存成功！（这是演示原型）');
+            backToProject();
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置初始页面
+            showPage('projects');
+            
+            // 自动预览笔记
+            setTimeout(() => {
+                if (document.getElementById('note-content')) {
+                    previewNote();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

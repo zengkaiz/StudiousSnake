@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(node init-db.js:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
