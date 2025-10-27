@@ -37,6 +37,42 @@
 - 多媒体内容支持
 - 全局搜索功能
 
+## 🎯 开发流程
+
+本项目采用 **VibeSpecs** 现代化开发流程，确保高质量交付和风险可控：
+
+### 📋 流程步骤
+
+```mermaid
+graph LR
+    A[需求文档] --> B[AI 设计图]
+    B --> C[AI 技术方案]
+    C --> D[开发任务分解]
+    D --> E[人工 Review]
+    E --> F[逐步开发]
+    F --> G[每步 Review]
+    G --> H[完成交付]
+```
+
+### 🔄 详细流程
+
+1. **📝 需求文档** - 明确项目目标和功能需求
+2. **🎨 AI 设计图** - 自动生成界面设计和交互原型
+3. **⚙️ AI 技术方案** - 智能制定技术架构和开发计划
+4. **📋 开发任务分解** - 将复杂需求拆分为可管理的小任务
+5. **👀 人工 Review** - 团队审核和修正技术方案
+6. **🚀 逐步开发** - 按任务优先级有序开发
+7. **✅ 每步 Review** - 每个里程碑进行质量检查
+8. **🎉 完成交付** - 确保功能完整性和稳定性
+
+### 🌟 流程优势
+
+- **风险可控**: 每个步骤都有明确的检查点
+- **质量保证**: 多重审核机制确保代码质量
+- **效率提升**: AI 辅助减少重复性工作
+- **团队协作**: 清晰的流程便于团队配合
+- **持续改进**: 每个项目都能优化流程
+
 ## 🏗️ 技术架构
 
 ### 前端技术栈
@@ -147,13 +183,24 @@ StudiousSnake/
 │   │   └── common/         # 通用模块
 │   ├── prisma/            # 数据库配置
 │   └── package.json
-└── docs/                  # 项目文档
+└── docs/                  # 项目文档 (VibeSpecs 流程产出)
     ├── api-spec.md        # API 接口规范
-    ├── architecture.md    # 系统架构
-    └── tech-spec.md       # 技术方案
+    ├── architecture.md    # 系统架构设计
+    ├── tech-spec.md       # 技术方案文档
+    ├── dev-tasks.md       # 开发任务分解
+    └── study-tracker.html # 学习记录原型
 ```
 
 ## 🔧 开发指南
+
+### VibeSpecs 流程实践
+
+本项目严格按照 VibeSpecs 流程进行开发，确保每个功能都有完整的文档支撑：
+
+- **需求阶段**: 参考 `docs/api-spec.md` 了解功能需求
+- **设计阶段**: 查看 `docs/architecture.md` 理解系统架构
+- **开发阶段**: 按照 `docs/dev-tasks.md` 执行具体任务
+- **技术参考**: 使用 `docs/tech-spec.md` 作为技术实现指南
 
 ### 代码规范
 
@@ -291,13 +338,19 @@ cd service && yarn start:dev
 
 ## 🙏 致谢
 
+### 开发流程
+
+感谢 **VibeSpecs** 现代化开发流程，让项目开发更加高效和可控。
+
+### 开源项目
+
 感谢以下开源项目的支持：
 
-- [Vue.js](https://vuejs.org/)
-- [NestJS](https://nestjs.com/)
-- [Prisma](https://www.prisma.io/)
-- [Naive UI](https://www.naiveui.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
+- [Vue.js](https://vuejs.org/) - 渐进式前端框架
+- [NestJS](https://nestjs.com/) - 企业级 Node.js 框架
+- [Prisma](https://www.prisma.io/) - 现代化数据库工具
+- [Naive UI](https://www.naiveui.com/) - Vue 3 组件库
+- [Tailwind CSS](https://tailwindcss.com/) - 实用优先的 CSS 框架
 
 ---
 
